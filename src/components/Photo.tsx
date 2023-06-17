@@ -35,7 +35,6 @@ export default function Photo(props: {
       })
       .then(function (responseBody) {
         alert("Delete successful");
-        console.log(responseBody.url);
       })
       .catch(function (error) {
         console.log("Request failed", error);

@@ -10,22 +10,6 @@ import ReactDOM from "react-dom/client";
 // export const UserContext = createContext(userData.data);
 
 const App: React.FC = () => {
-  const accessToken = localStorage.getItem("accessToken");
-  const [userData, setUserData] = useState();
-
-  useEffect(() => {
-    fetch("https://mock-api.arikmpt.com/api/user/profile", {
-      method: "GET",
-      headers: {
-        Authorization: `${accessToken}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUserData((userData) => (userData = data));
-      });
-  }, []);
-
   return (
     <Router>
       <Routes>
