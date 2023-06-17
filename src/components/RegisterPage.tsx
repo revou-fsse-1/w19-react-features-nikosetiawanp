@@ -80,11 +80,37 @@ export default function RegisterPage() {
       registerName,
       registerPassword,
     };
-    alert(JSON.stringify(formData));
+
+    fetch("https://mock-api.arikmpt.com/api/user/register", {
+      method: "POST",
+      body: JSON.stringify({
+        name: registerName,
+        email: registerEmail,
+        password: registerPassword,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+          console.log("Register Successful");
+        }
+        {
+          throw new Error("Post Failed");
+        }
+      })
+      .then(function (responseBody) {
+        console.log(responseBody.url);
+      })
+      .catch(function (error) {
+        console.log("Request failed", error);
+      });
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen justify-center items-center">
+    <div className="flex flex-col h-screen w-full justify-center items-center">
       <img
         className="h-full w-full object-cover -z-50 absolute"
         src="https://images.unsplash.com/photo-1568528139106-c295280e4757?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
@@ -106,7 +132,7 @@ export default function RegisterPage() {
           onChange={handleRegisterNameChange}
           className={`${
             nameError === true ? "border-red-500" : null
-          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-bold placeholder:text-gray-300 transition-colors duration-300`}
+          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-semibold placeholder:text-gray-300 transition-colors duration-300`}
         />
 
         {nameError === true ? (
@@ -123,7 +149,7 @@ export default function RegisterPage() {
           onChange={handleRegisterEmailChange}
           className={`${
             emailError === true ? "border-red-500" : null
-          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-bold placeholder:text-gray-300 transition-colors duration-300`}
+          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:semibold placeholder:text-gray-300 transition-colors duration-300`}
         />
         {emailError === true ? (
           <span className="text-red-500 text-sm font-medium -mt-8 ">
@@ -139,7 +165,7 @@ export default function RegisterPage() {
           onChange={handleRegisterPasswordChange}
           className={`${
             passwordError === true ? "border-red-500" : null
-          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-bold placeholder:text-gray-300 transition-colors duration-300`}
+          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-semibold placeholder:text-gray-300 transition-colors duration-300`}
         />
         {passwordError === true ? (
           <span className="text-red-500 text-sm font-medium -mt-8 ">
@@ -154,7 +180,10 @@ export default function RegisterPage() {
         />
         <span className="self-center shadow-2xl">
           Already have an account? &nbsp;
-          <a className="text-red-500 font-bold " href="#">
+          <a
+            className="text-red-500 font-bold "
+            href="http://localhost:5173/login"
+          >
             Login
           </a>
         </span>

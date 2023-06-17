@@ -90,7 +90,7 @@ export default function NewImageForm(props: {
           <div className="flex justify-end gap-2 w-full">
             <button
               onClick={toggleNewImageForm}
-              className="bg-gray-200 text-gray-500 flex items-center flex-nowrap h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:shadow-md hover:scale-105 hover:cursor-pointer transition-transform duration-300"
+              className="bg-gray-200 text-gray-500 flex items-center flex-nowrap h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:bg-gray-100 hover:cursor-pointer transition-transform duration-300"
             >
               Cancel
             </button>
@@ -98,7 +98,7 @@ export default function NewImageForm(props: {
               onClick={handleFormSubmit}
               type="submit"
               value="Submit"
-              className="bg-red-600 flex items-center flex-nowrap text-white h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:shadow-md hover:scale-105 hover:cursor-pointer transition-transform duration-300"
+              className="bg-red-600 flex items-center flex-nowrap text-white h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:bg-red-500 hover:cursor-pointer transition-transform duration-300"
             />
           </div>
         </form>

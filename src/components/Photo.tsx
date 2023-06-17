@@ -13,6 +13,35 @@ export default function Photo(props: {
     setEditImageForm((editImageForm) => !editImageForm);
   };
 
+  const deletePhoto = (e) => {
+    e.preventDefault();
+    fetch(
+      `https://648b162117f1536d65ea53a5.mockapi.io/images/${props.imageId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      }
+    )
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+          console.log("DELETE SUCCESSFUL");
+        }
+        {
+          throw new Error("Delet Failed");
+        }
+      })
+      .then(function (responseBody) {
+        alert("Delete successful");
+        console.log(responseBody.url);
+      })
+      .catch(function (error) {
+        console.log("Request failed", error);
+      });
+  };
+
   const likePhoto = (e) => {
     console.log("handleFormSubmit ran");
     e.preventDefault();
@@ -99,7 +128,7 @@ export default function Photo(props: {
         key={props.imageId}
         className="bg-gray-200 overflow-hidden rounded-2xl relative mb-4 hover:scale-105 transition-transform"
       >
-        <div className="absolute z-50 bg-black/50 opacity-0 hover:opacity-100 transition-opacity oveflow-hidden w-full h-full">
+        <div className="absolute bg-black/50 opacity-0 hover:opacity-100 transition-opacity oveflow-hidden w-full h-full z-10">
           {isLiked ? (
             <button
               onClick={dislikePhoto}
@@ -120,6 +149,12 @@ export default function Photo(props: {
             className="w-12 rounded-full absolute right-2 top-8 bg-white text-black text-xs font-bold px-2"
           >
             Edit
+          </button>
+          <button
+            onClick={deletePhoto}
+            className="w-12 rounded-full absolute flex justify-center right-2 top-14 bg-white text-black text-xs font-bold px-2"
+          >
+            Delete
           </button>
           <span className="text-white absolute font-semibold bottom-2 left-3">
             {props.imageTitle}

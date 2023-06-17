@@ -7,6 +7,7 @@ export default function LoginPage() {
 
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleLoginEmailChange = (event: {
     target: { value: SetStateAction<string> };
@@ -53,11 +54,40 @@ export default function LoginPage() {
       loginEmail,
       loginPassword,
     };
-    alert(JSON.stringify(formData));
+
+    fetch("https://mock-api.arikmpt.com/api/user/login", {
+      method: "POST",
+      body: JSON.stringify({
+        email: loginEmail,
+        password: loginPassword,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log(response);
+          return response.json();
+        }
+        {
+          throw new Error("Something went wrong");
+        }
+      })
+      .then(function (responseBody) {
+        localStorage.setItem("accessToken", responseBody.data.token);
+        console.log(responseBody.data.token);
+        alert("Login successful, redirecting...");
+        window.location.replace("http://localhost:5173/homepage");
+      })
+      .catch(function (error) {
+        setErrorMessage((errorMessage) => (errorMessage = error));
+        console.log(errorMessage);
+      });
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen justify-center items-center">
+    <div className="flex flex-col h-screen w-full justify-center items-center">
       <img
         className="h-full w-full object-cover -z-50 absolute"
         src="https://images.unsplash.com/photo-1568528139106-c295280e4757?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
@@ -80,7 +110,7 @@ export default function LoginPage() {
           onChange={handleLoginEmailChange}
           className={`${
             emailError === true ? "border-red-500" : null
-          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-bold placeholder:text-gray-300 transition-colors duration-300`}
+          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-semibold placeholder:text-gray-300 transition-colors duration-300`}
         />
         {emailError === true ? (
           <span className="text-red-500 text-sm font-medium -mt-8 ">
@@ -97,7 +127,7 @@ export default function LoginPage() {
           onChange={handleLoginPasswordChange}
           className={`${
             passwordError === true ? "border-red-500" : null
-          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-bold placeholder:text-gray-300 transition-colors duration-300`}
+          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-semibold placeholder:text-gray-300 transition-colors duration-300`}
         />
         {passwordError === true ? (
           <span className="text-red-500 text-sm font-medium -mt-8 ">
@@ -110,9 +140,15 @@ export default function LoginPage() {
           value="Log in"
           className="bg-red-600 text-white text-center font-bold w-full py-2 mt-8 rounded-full hover:scale-105 hover:shadow-md hover:cursor-pointer active:scale-100 transition-transform duration:300"
         />
+        <span className="text-red-500 text-md font-medium w-full">
+          {/* {errorMessage} */}
+        </span>
         <span className="self-center shadow-2xl">
           Don't have an account? &nbsp;
-          <a className="text-red-500 font-bold " href="#">
+          <a
+            className="text-red-500 font-bold "
+            href="http://localhost:5173/register"
+          >
             Register here
           </a>
         </span>
