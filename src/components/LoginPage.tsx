@@ -68,7 +68,7 @@ export default function LoginPage() {
           return response.json();
         }
         {
-          throw new Error("Something went wrong");
+          throw new Error("Invalid Email / Password");
         }
       })
       .then(function (responseBody) {
@@ -78,7 +78,10 @@ export default function LoginPage() {
         window.location.replace("http://localhost:5173/homepage");
       })
       .catch(function (error) {
-        setErrorMessage((errorMessage) => (errorMessage = error));
+        setErrorMessage((errorMessage) => {
+          return (errorMessage = error);
+        });
+        alert(error);
         console.log(errorMessage);
       });
   };
