@@ -24,7 +24,7 @@ export default function Photo(props: {
     setDeletePhotoForm((deletePhotoForm) => !deletePhotoForm);
   };
 
-  const likePhoto = (e) => {
+  const likePhoto = (e: React.ChangeEvent<any>) => {
     e.preventDefault();
     setIsLiked(true);
 
@@ -60,7 +60,7 @@ export default function Photo(props: {
       });
   };
 
-  const dislikePhoto = (e) => {
+  const dislikePhoto = (e: React.ChangeEvent<any>) => {
     e.preventDefault();
     setIsLiked(false);
 
@@ -89,7 +89,7 @@ export default function Photo(props: {
         }
       })
       .then(function (responseBody) {
-        // props.setIsRerender((prev) => !prev);
+        props.setIsRerender((prev) => !prev);
       })
       .catch(function (error) {
         console.log("Request failed", error);
@@ -124,37 +124,37 @@ export default function Photo(props: {
       {!isDeleted && (
         <div
           key={props.imageId}
-          className="bg-gray-200 overflow-hidden rounded-2xl relative mb-4 hover:scale-105 transition-transform"
+          className="relative mb-4 min-h-[100px] overflow-hidden rounded-2xl bg-gray-200 transition-transform hover:scale-105"
         >
-          <div className="absolute bg-black/50 opacity-0 hover:opacity-100 transition-opacity oveflow-hidden w-full h-full z-10">
+          <div className="oveflow-hidden absolute z-10 h-full w-full bg-black/50 opacity-0 transition-opacity hover:opacity-100">
             {isLiked ? (
               <button
                 onClick={dislikePhoto}
-                className="w-12 rounded-full absolute right-2 top-2 bg-red-600 text-white text-xs font-bold px-2"
+                className="absolute right-2 top-2 w-12 rounded-full bg-red-600 px-2 text-xs font-bold text-white"
               >
                 Liked
               </button>
             ) : (
               <button
                 onClick={likePhoto}
-                className="w-12 rounded-full absolute right-2 top-2 bg-white text-black text-xs font-bold px-2"
+                className="absolute right-2 top-2 w-12 rounded-full bg-white px-2 text-xs font-bold text-black"
               >
                 Like
               </button>
             )}
             <button
               onClick={toggleEditImageForm}
-              className="w-12 rounded-full absolute right-2 top-8 bg-white text-black text-xs font-bold px-2"
+              className="absolute right-2 top-8 w-12 rounded-full bg-white px-2 text-xs font-bold text-black"
             >
               Edit
             </button>
             <button
               onClick={toggleDeletePhotoForm}
-              className="w-12 rounded-full absolute flex justify-center right-2 top-14 bg-white text-black text-xs font-bold px-2"
+              className="absolute right-2 top-14 flex w-12 justify-center rounded-full bg-white px-2 text-xs font-bold text-black"
             >
               Delete
             </button>
-            <span className="text-white absolute font-semibold bottom-2 left-3">
+            <span className="absolute bottom-2 left-3 font-semibold text-white">
               {props.imageTitle}
             </span>
           </div>

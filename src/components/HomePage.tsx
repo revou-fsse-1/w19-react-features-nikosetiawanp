@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import NewImageForm from "./NewImageForm";
 import Photo from "./Photo";
 
@@ -44,8 +44,10 @@ export default function HomePage() {
   }, [isRerender]);
 
   // filter by liked
-  const likedImageList = images.filter(
-    (image: { isLiked: boolean }) => image.isLiked === true
+  const likedImageList = useMemo(
+    () =>
+      images.filter((image: { isLiked: boolean }) => image.isLiked === true),
+    [images]
   );
 
   // filter by search
@@ -191,6 +193,8 @@ export default function HomePage() {
           newImageForm={newImageForm}
           setNewImageForm={setNewImageForm}
           imagesLength={images.length}
+          isRerender={isRerender}
+          setIsRerender={setIsRerender}
         />
       ) : null}
     </div>

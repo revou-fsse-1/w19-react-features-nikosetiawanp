@@ -4,12 +4,14 @@ export default function NewImageForm(props: {
   newImageForm: boolean;
   setNewImageForm: React.Dispatch<React.SetStateAction<boolean>>;
   imagesLength: number;
+  isRerender: boolean;
+  setIsRerender: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
-  const toggleNewImageForm = () => {
+  const toggleNewImageForm = useCallback(() => {
     props.setNewImageForm((newImageForm) => !newImageForm);
-  };
+  }, [props]);
 
   const handleTitleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,41 +26,42 @@ export default function NewImageForm(props: {
     []
   );
 
-  const handleFormSubmit = useCallback((e: React.ChangeEvent<any>) => {
-    console.log("handleFormSubmtit ran");
+  const handleFormSubmit = useCallback(
+    (e: React.ChangeEvent<any>) => {
+      e.preventDefault();
 
-    e.preventDefault();
-
-    fetch("https://648b162117f1536d65ea53a5.mockapi.io/images/", {
-      method: "POST",
-      body: JSON.stringify({
-        title: title,
-        url: url,
-        isLiked: false,
-        id: props.imagesLength + 1,
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-          console.log("POST SUCCESSFUL");
-        }
-        {
-          throw new Error("Post Failed");
-        }
+      fetch("https://648b162117f1536d65ea53a5.mockapi.io/images/", {
+        method: "POST",
+        body: JSON.stringify({
+          title: title,
+          url: url,
+          isLiked: false,
+          id: props.imagesLength + 1,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
       })
-      .then(function (responseBody) {
-        toggleNewImageForm();
-        alert("Photo has been successfully added");
-        console.log(responseBody.url);
-      })
-      .catch(function (error) {
-        console.log("Request failed", error);
-      });
-  }, []);
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+            console.log("POST SUCCESSFUL");
+          }
+          {
+            throw new Error("Post Failed");
+          }
+        })
+        .then(function (responseBody) {
+          toggleNewImageForm();
+          props.setIsRerender((prev) => !prev);
+          alert("Photo has been successfully added");
+        })
+        .catch(function (error) {
+          console.log("Request failed", error);
+        });
+    },
+    [props.imagesLength, toggleNewImageForm, title, url]
+  );
 
   return (
     <div

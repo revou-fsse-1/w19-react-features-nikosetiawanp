@@ -144,7 +144,7 @@ export default function LoginPage() {
           {/* {errorMessage} */}
         </span>
         <span className="self-center shadow-2xl">
-          Don't have an account? &nbsp;
+          Don't have an accqunt? &nbsp;
           <a
             className="font-bold text-red-500 "
             href="http://localhost:5173/register"
