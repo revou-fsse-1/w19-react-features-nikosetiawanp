@@ -1,5 +1,4 @@
-import { SetStateAction, useState } from "react";
-import Logo from "./Logo";
+import { SetStateAction, useState, useCallback } from "react";
 
 export default function RegisterPage() {
   const [registerEmail, setRegisterEmail] = useState("");
@@ -10,21 +9,24 @@ export default function RegisterPage() {
   const [nameError, setNameError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
-  const handleRegisterEmailChange = (event: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setRegisterEmail(event.target.value);
-  };
-  const handleRegisterPasswordChange = (event: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setRegisterPassword(event.target.value);
-  };
-  const handleRegisterNameChange = (event: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setRegisterName(event.target.value);
-  };
+  const handleRegisterEmailChange = useCallback(
+    (event: { target: { value: SetStateAction<string> } }) => {
+      setRegisterEmail(event.target.value);
+    },
+    []
+  );
+  const handleRegisterPasswordChange = useCallback(
+    (event: { target: { value: SetStateAction<string> } }) => {
+      setRegisterPassword(event.target.value);
+    },
+    []
+  );
+  const handleRegisterNameChange = useCallback(
+    (event: { target: { value: SetStateAction<string> } }) => {
+      setRegisterName(event.target.value);
+    },
+    []
+  );
 
   const showNameError = () => {
     setNameError((nameError: boolean) => (nameError = true));
@@ -46,7 +48,7 @@ export default function RegisterPage() {
     setPasswordError((passwordError: boolean) => (passwordError = false));
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = (event: React.ChangeEvent<any>) => {
     event.preventDefault();
 
     if (!registerEmail) {
@@ -110,19 +112,19 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-full justify-center items-center">
+    <div className="flex h-screen w-full flex-col items-center justify-center">
       <img
-        className="h-full w-full object-cover -z-50 absolute"
+        className="absolute -z-50 h-full w-full object-cover"
         src="https://images.unsplash.com/photo-1568528139106-c295280e4757?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
         alt="background-image"
       />
-      <div className="bg-black/50 -z-10 w-full h-full absolute backdrop-blur-sm"></div>
+      <div className="absolute -z-10 h-full w-full bg-black/50 backdrop-blur-sm"></div>
       {/* <Logo /> */}
       <form
-        className="flex relative flex-col gap-8 items-start max-w-lg p-12 h-full md:h-fit w-full md:rounded-2xl shadow-2xl overflow-hidden bg-white"
+        className="relative flex h-full w-full max-w-lg flex-col items-start gap-8 overflow-hidden bg-white p-12 shadow-2xl md:h-fit md:rounded-2xl"
         onSubmit={handleFormSubmit}
       >
-        <h1 className="font-bold text-4xl self-center">Register</h1>
+        <h1 className="self-center text-4xl font-bold">Register</h1>
         {/* EMAIL */}
         <input
           type="text"
@@ -132,11 +134,11 @@ export default function RegisterPage() {
           onChange={handleRegisterNameChange}
           className={`${
             nameError === true ? "border-red-500" : null
-          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-semibold placeholder:text-gray-300 transition-colors duration-300`}
+          } relative w-full border-b-2 bg-white/5 py-2 outline-none transition-colors duration-300 placeholder:font-semibold placeholder:text-gray-300 focus:border-red-500 focus:placeholder:text-white`}
         />
 
         {nameError === true ? (
-          <span className="text-red-500 text-sm font-medium -mt-8 ">
+          <span className="-mt-8 text-sm font-medium text-red-500 ">
             Name must not be empty
           </span>
         ) : null}
@@ -149,10 +151,10 @@ export default function RegisterPage() {
           onChange={handleRegisterEmailChange}
           className={`${
             emailError === true ? "border-red-500" : null
-          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:semibold placeholder:text-gray-300 transition-colors duration-300`}
+          } placeholder:semibold relative w-full border-b-2 bg-white/5 py-2 outline-none transition-colors duration-300 placeholder:text-gray-300 focus:border-red-500 focus:placeholder:text-white`}
         />
         {emailError === true ? (
-          <span className="text-red-500 text-sm font-medium -mt-8 ">
+          <span className="-mt-8 text-sm font-medium text-red-500 ">
             Email must not be empty
           </span>
         ) : null}
@@ -165,10 +167,10 @@ export default function RegisterPage() {
           onChange={handleRegisterPasswordChange}
           className={`${
             passwordError === true ? "border-red-500" : null
-          } border-b-2 bg-white/5 relative w-full py-2 outline-none focus:border-red-500 focus:placeholder:text-white placeholder:font-semibold placeholder:text-gray-300 transition-colors duration-300`}
+          } relative w-full border-b-2 bg-white/5 py-2 outline-none transition-colors duration-300 placeholder:font-semibold placeholder:text-gray-300 focus:border-red-500 focus:placeholder:text-white`}
         />
         {passwordError === true ? (
-          <span className="text-red-500 text-sm font-medium -mt-8 ">
+          <span className="-mt-8 text-sm font-medium text-red-500 ">
             Minimum password length is 6 characters
           </span>
         ) : null}
@@ -176,12 +178,12 @@ export default function RegisterPage() {
         <input
           type="submit"
           value="Register"
-          className="bg-red-600 text-white text-center font-bold w-full py-2 mt-8 rounded-full hover:scale-105 hover:shadow-md hover:cursor-pointer active:scale-100 transition-transform duration:300"
+          className="duration:300 mt-8 w-full rounded-full bg-red-600 py-2 text-center font-bold text-white transition-transform hover:scale-105 hover:cursor-pointer hover:shadow-md active:scale-100"
         />
         <span className="self-center shadow-2xl">
           Already have an account? &nbsp;
           <a
-            className="text-red-500 font-bold "
+            className="font-bold text-red-500 "
             href="http://localhost:5173/login"
           >
             Login

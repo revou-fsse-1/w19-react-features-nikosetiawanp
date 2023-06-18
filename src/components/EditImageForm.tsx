@@ -1,27 +1,32 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export default function EditImageForm(props: {
   imageId: number;
   imageTitle: string;
   imageUrl: string;
   isLiked: boolean;
+  isRerender: boolean;
   setEditImageForm: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsRerender: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [title, setTitle] = useState(props.imageTitle);
   const [url, setUrl] = useState(props.imageUrl);
-  const handleTitleChange = (event) => {
+
+  const handleTitleChange = useCallback((event: React.ChangeEvent<any>) => {
     setTitle(event.target.value);
-  };
-  const handleUrlChange = (event) => {
+  }, []);
+
+  const handleUrlChange = useCallback((event: React.ChangeEvent<any>) => {
     setUrl(event.target.value);
-  };
+  }, []);
+
   const toggleEditImageForm = () => {
     props.setEditImageForm((editImageForm) => !editImageForm);
   };
 
-  const handleFormSubmit = (e) => {
-    console.log("handleFormSubmit ran");
+  const handleFormSubmit = (e: React.ChangeEvent<any>) => {
     e.preventDefault();
+    toggleEditImageForm();
     fetch(
       `https://648b162117f1536d65ea53a5.mockapi.io/images/${props.imageId}`,
       {
@@ -47,9 +52,7 @@ export default function EditImageForm(props: {
         }
       })
       .then(function (responseBody) {
-        toggleEditImageForm();
-        console.log(responseBody.url);
-        alert("Changes has been saved");
+        props.setIsRerender((prev) => !prev);
       })
       .catch(function (error) {
         console.log("Request failed", error);
@@ -57,13 +60,13 @@ export default function EditImageForm(props: {
   };
 
   return (
-    <div className="z-50 w-full h-full bg-black/50 fixed top-0 left-0 flex items-center justify-center p-4">
-      <div className="bg-white p-4 rounded-2xl shadow-lg w-full max-w-[425px] flex flex-col items-start z-50">
-        <h2 className="font-bold text-2xl mb-4">Edit image</h2>
+    <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/50 p-4">
+      <div className="z-50 flex w-full max-w-[425px] flex-col items-start rounded-2xl bg-white p-4 shadow-lg">
+        <h2 className="mb-4 text-2xl font-bold">Edit image</h2>
         <form
           onSubmit={handleFormSubmit}
           action="submit"
-          className="w-full flex flex-col items-start"
+          className="flex w-full flex-col items-start"
         >
           {/* title */}
           <label className="font-semibold" htmlFor="title">
@@ -75,7 +78,7 @@ export default function EditImageForm(props: {
             id="title"
             name="title"
             placeholder={title}
-            className="bg-gray-200 p-3 rounded-2xl text-sm placeholder:text-sm placeholder:font-semibold w-full outline-none mb-4"
+            className="mb-4 w-full rounded-2xl bg-gray-200 p-3 text-sm outline-none placeholder:text-sm placeholder:font-semibold"
           />
           {/* url */}
           <label className="font-semibold" htmlFor="url">
@@ -87,12 +90,12 @@ export default function EditImageForm(props: {
             id="url"
             name="url"
             placeholder={url}
-            className="bg-gray-200 p-3 rounded-2xl text-sm placeholder:text-sm placeholder:font-semibold w-full outline-none mb-4"
+            className="mb-4 w-full rounded-2xl bg-gray-200 p-3 text-sm outline-none placeholder:text-sm placeholder:font-semibold"
           />
-          <div className="flex justify-end gap-2 w-full">
+          <div className="flex w-full justify-end gap-2">
             <button
               onClick={toggleEditImageForm}
-              className="bg-gray-200 text-gray-500 flex items-center flex-nowrap h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:bg-gray-100 hover:cursor-pointer transition-transform duration-300"
+              className="flex h-[40px] w-fit flex-nowrap items-center rounded-xl bg-gray-200 px-4 py-1 font-semibold text-gray-500 transition-transform duration-300 hover:cursor-pointer hover:bg-gray-100"
             >
               Cancel
             </button>
@@ -100,7 +103,7 @@ export default function EditImageForm(props: {
               onClick={handleFormSubmit}
               type="submit"
               value="Submit"
-              className="bg-red-600 flex items-center flex-nowrap text-white h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:bg-red-500 hover:cursor-pointer transition-transform active:scale-100 duration-300"
+              className="flex h-[40px] w-fit flex-nowrap items-center rounded-xl bg-red-600 px-4 py-1 font-semibold text-white transition-transform duration-300 hover:cursor-pointer hover:bg-red-500 active:scale-100"
             />
           </div>
         </form>

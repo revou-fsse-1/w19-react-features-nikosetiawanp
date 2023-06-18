@@ -1,7 +1,3 @@
-import { useState } from "react";
-
-// ada 3 props yg masuk kesini : props.filterValue , props.categoryName
-
 export default function FilterByCategoryButton(props: {
   categoryName: string;
   categoryFilter: string;
@@ -18,7 +14,7 @@ export default function FilterByCategoryButton(props: {
       onClick={() => {
         applyCategoryFilter();
       }}
-      className="bg-red-500 flex items-center flex-nowrap text-white h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:shadow-md hover:scale-105 hover:cursor-pointer transition-transform transition-colors duration-300"
+      className="flex h-[40px] w-fit flex-nowrap items-center rounded-xl bg-red-500 px-4 py-1 font-semibold text-white transition-colors transition-transform duration-300 hover:scale-105 hover:cursor-pointer hover:shadow-md"
     >
       {props.categoryName}
     </button>
@@ -27,7 +23,7 @@ export default function FilterByCategoryButton(props: {
       onClick={() => {
         applyCategoryFilter();
       }}
-      className="bg-gray-200 text-gray-500 h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:shadow-md hover:scale-105 hover:cursor-pointer transition-transform transition-colors duration-300"
+      className="h-[40px] w-fit rounded-xl bg-gray-200 px-4 py-1 font-semibold text-gray-500 transition-colors transition-transform duration-300 hover:scale-105 hover:cursor-pointer hover:shadow-md"
     >
       {props.categoryName}
     </button>

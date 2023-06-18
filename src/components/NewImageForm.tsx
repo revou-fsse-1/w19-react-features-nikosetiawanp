@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useCallback } from "react";
 
 export default function NewImageForm(props: {
   newImageForm: boolean;
@@ -7,15 +7,24 @@ export default function NewImageForm(props: {
 }) {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
-
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
-  };
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value);
+  const toggleNewImageForm = () => {
+    props.setNewImageForm((newImageForm) => !newImageForm);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleTitleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setTitle(event.target.value);
+    },
+    []
+  );
+  const handleUrlChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setUrl(event.target.value);
+    },
+    []
+  );
+
+  const handleFormSubmit = useCallback((e: React.ChangeEvent<any>) => {
     console.log("handleFormSubmtit ran");
 
     e.preventDefault();
@@ -42,26 +51,25 @@ export default function NewImageForm(props: {
         }
       })
       .then(function (responseBody) {
+        toggleNewImageForm();
+        alert("Photo has been successfully added");
         console.log(responseBody.url);
       })
       .catch(function (error) {
         console.log("Request failed", error);
       });
-  };
+  }, []);
 
-  const toggleNewImageForm = () => {
-    props.setNewImageForm((newImageForm) => !newImageForm);
-  };
   return (
     <div
-      className={`z-50 w-full h-full bg-black/50 fixed top-0 left-0 flex items-center justify-center p-4`}
+      className={`fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-black/50 p-4`}
     >
-      <div className="bg-white p-4 rounded-2xl shadow-lg w-full max-w-[425px] flex flex-col items-start">
-        <h2 className="font-bold text-2xl mb-4">Add new image</h2>
+      <div className="flex w-full max-w-[425px] flex-col items-start rounded-2xl bg-white p-4 shadow-lg">
+        <h2 className="mb-4 text-2xl font-bold">Add new image</h2>
         <form
           onSubmit={handleFormSubmit}
           action="submit"
-          className="w-full flex flex-col items-start"
+          className="flex w-full flex-col items-start"
         >
           {/* title */}
           <label className="font-semibold" htmlFor="title">
@@ -72,7 +80,7 @@ export default function NewImageForm(props: {
             id="title"
             name="title"
             placeholder="Title"
-            className="bg-gray-200 p-3 rounded-2xl text-sm placeholder:text-sm placeholder:font-semibold w-full outline-none mb-4"
+            className="mb-4 w-full rounded-2xl bg-gray-200 p-3 text-sm outline-none placeholder:text-sm placeholder:font-semibold"
             onChange={handleTitleChange}
           />
           {/* url */}
@@ -84,13 +92,13 @@ export default function NewImageForm(props: {
             id="url"
             name="url"
             placeholder="Image url"
-            className="bg-gray-200 p-3 rounded-2xl text-sm placeholder:text-sm placeholder:font-semibold w-full outline-none mb-4"
+            className="mb-4 w-full rounded-2xl bg-gray-200 p-3 text-sm outline-none placeholder:text-sm placeholder:font-semibold"
             onChange={handleUrlChange}
           />
-          <div className="flex justify-end gap-2 w-full">
+          <div className="flex w-full justify-end gap-2">
             <button
               onClick={toggleNewImageForm}
-              className="bg-gray-200 text-gray-500 flex items-center flex-nowrap h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:bg-gray-100 hover:cursor-pointer transition-transform duration-300"
+              className="flex h-[40px] w-fit flex-nowrap items-center rounded-xl bg-gray-200 px-4 py-1 font-semibold text-gray-500 transition-transform duration-300 hover:cursor-pointer hover:bg-gray-100"
             >
               Cancel
             </button>
@@ -98,7 +106,7 @@ export default function NewImageForm(props: {
               onClick={handleFormSubmit}
               type="submit"
               value="Submit"
-              className="bg-red-600 flex items-center flex-nowrap text-white h-[40px] w-fit py-1 px-4 rounded-xl font-semibold hover:bg-red-500 hover:cursor-pointer transition-transform duration-300"
+              className="flex h-[40px] w-fit flex-nowrap items-center rounded-xl bg-red-600 px-4 py-1 font-semibold text-white transition-transform duration-300 hover:cursor-pointer hover:bg-red-500"
             />
           </div>
         </form>

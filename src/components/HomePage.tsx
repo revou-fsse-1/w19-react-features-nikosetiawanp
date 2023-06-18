@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useCallback } from "react";
 import NewImageForm from "./NewImageForm";
 import FilterByCategoryButton from "./FilterByCategoryButton";
 import Photo from "./Photo";
@@ -9,26 +9,32 @@ export default function HomePage() {
   const [displayIsLiked, setDisplayIsLiked] = useState(false);
   const [images, setImages] = useState([]);
   const [searchInput, setSearchInput] = useState("");
+  const [isRerender, setIsRerender] = useState(false);
 
   const accessToken = localStorage.getItem("accessToken");
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState({ data: { name: "Guest" } });
 
-  const handleSearchInputChange = (event) => {
-    setSearchInput(event.target.value);
-  };
+  const handleSearchInputChange = useCallback(
+    (event: React.ChangeEvent<any>) => {
+      setSearchInput(event.target.value);
+    },
+    []
+  );
 
   useEffect(() => {
-    fetch("https://mock-api.arikmpt.com/api/user/profile", {
-      method: "GET",
-      headers: {
-        Authorization: `${accessToken}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUserData((userData) => (userData = data));
-      });
-  }, []);
+    if (accessToken) {
+      fetch("https://mock-api.arikmpt.com/api/user/profile", {
+        method: "GET",
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setUserData((userData) => (userData = data));
+        });
+    }
+  }, [accessToken, isRerender]);
 
   // fetch data
   useEffect(() => {
@@ -37,17 +43,19 @@ export default function HomePage() {
       .then((data) => {
         setImages((images) => (images = data));
       });
-  }, []);
+  }, [isRerender]);
 
-  const likedImageList = images.filter((image) => image.isLiked === true);
-  console.log(likedImageList);
+  // filter by liked
+  const likedImageList = images.filter(
+    (image: { isLiked: boolean }) => image.isLiked === true
+  );
 
   // filter by search
   const filteredImageList = displayIsLiked
-    ? likedImageList.filter((image) =>
+    ? likedImageList.filter((image: { title: string }) =>
         image.title.toLowerCase().includes(searchInput.toLowerCase())
       )
-    : images.filter((image) =>
+    : images.filter((image: { title: string }) =>
         image.title.toLowerCase().includes(searchInput.toLowerCase())
       );
   // render images
@@ -55,10 +63,13 @@ export default function HomePage() {
     (image: { id: number; title: string; url: string; isLiked: boolean }) => {
       return (
         <Photo
+          key={image.id}
           imageId={image.id}
           imageTitle={image.title}
           imageUrl={image.url}
           isLiked={image.isLiked}
+          isRerender={isRerender}
+          setIsRerender={setIsRerender}
         />
       );
     }
@@ -69,44 +80,61 @@ export default function HomePage() {
     setNewImageForm((newImageForm) => !newImageForm);
   };
   const showDisplayIsLiked = () => {
+    setIsRerender((prev) => !prev);
     setDisplayIsLiked((displayIsLiked) => (displayIsLiked = true));
   };
   const hideDisplayIsLiked = () => {
+    setIsRerender((prev) => !prev);
     setDisplayIsLiked((displayIsLiked) => (displayIsLiked = false));
   };
 
-  // delete this
-
   return (
-    <div className="w-full px-12">
-      {/* Navigation */}
-      <nav className="sticky w-full flex justify-between items-center py-4 gap-4 z-50 bg-white border-b">
-        <a href="#" className="font-bold text-2xl">
+    <div className="w-full px-12 pb-8">
+      <nav className="sticky z-50 flex w-full items-center justify-between gap-4 border-b bg-white py-4">
+        <a href="#" className="text-2xl font-bold">
           MyPhoto
         </a>
-        <span className="font-bold">
-          {userData ? (
-            "Welcome" + " " + userData.data.name + "!"
-          ) : (
-            <button className="px-4 py-1 bg-red-600 hover:bg-red-500">
-              Log in
+        {/* profile picture */}
+        {accessToken ? (
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                window.location.replace("http://localhost:5173/login");
+                localStorage.removeItem("accessToken");
+              }}
+              className="rounded-2xl  bg-red-600 px-5 py-2 font-bold text-white hover:bg-red-500"
+            >
+              Logout
             </button>
-          )}
-        </span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black font-bold text-white">
+              {userData.data.name[0].toUpperCase()}
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => {
+              window.location.replace("http://localhost:5173/login");
+            }}
+            className="rounded-2xl  bg-red-600 px-5 py-2 font-bold text-white hover:bg-red-500"
+          >
+            Login
+          </button>
+        )}
       </nav>
+      {/* Welcome message */}
+      <span className="flex w-full justify-start py-6 text-4xl font-bold">
+        Welcome {userData.data.name}!
+      </span>
       {/* Search bar & filter */}
-      <section className="flex justify-between gap-3 py-4 bg-white">
-        <form action="submit" className="w-full relative">
+      <section className="flex justify-between gap-3 bg-white py-4">
+        <form action="submit" className="relative w-full">
           <div className="relative">
             <input
               type="text"
-              placeholder="Search"
-              className="bg-gray-200 p-3 rounded-2xl text-sm placeholder:text-sm placeholder:font-semibold w-full outline-none"
+              placeholder="Search image here..."
+              className="w-full rounded-2xl bg-gray-200 p-3 text-sm outline-none placeholder:text-sm placeholder:font-semibold"
               onChange={handleSearchInputChange}
             />
-            <button className="w-[20px] absolute right-4 inset-y-0">
-              <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbG5zOnN2Z2pzPSJodHRwOi8vc3ZnanMuY29tL3N2Z2pzIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeD0iMCIgeT0iMCIgdmlld0JveD0iMCAwIDU2Ljk2NiA1Ni45NjYiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDUxMiA1MTIiIHhtbDpzcGFjZT0icHJlc2VydmUiIGNsYXNzPSIiPjxnPjxwYXRoIGQ9Ik01NS4xNDYgNTEuODg3IDQxLjU4OCAzNy43ODZBMjIuOTI2IDIyLjkyNiAwIDAgMCA0Ni45ODQgMjNjMC0xMi42ODItMTAuMzE4LTIzLTIzLTIzcy0yMyAxMC4zMTgtMjMgMjMgMTAuMzE4IDIzIDIzIDIzYzQuNzYxIDAgOS4yOTgtMS40MzYgMTMuMTc3LTQuMTYybDEzLjY2MSAxNC4yMDhjLjU3MS41OTMgMS4zMzkuOTIgMi4xNjIuOTIuNzc5IDAgMS41MTgtLjI5NyAyLjA3OS0uODM3YTMuMDA0IDMuMDA0IDAgMCAwIC4wODMtNC4yNDJ6TTIzLjk4NCA2YzkuMzc0IDAgMTcgNy42MjYgMTcgMTdzLTcuNjI2IDE3LTE3IDE3LTE3LTcuNjI2LTE3LTE3IDcuNjI2LTE3IDE3LTE3eiIgZmlsbD0iIzllOWU5ZSIgZGF0YS1vcmlnaW5hbD0iIzAwMDAwMCIgY2xhc3M9IiI+PC9wYXRoPjwvZz48L3N2Zz4=" />{" "}
-            </button>
           </div>
         </form>
         {/* filter button */}
@@ -115,53 +143,51 @@ export default function HomePage() {
           className={`text-xl font-bold ${
             !newImageForm
               ? "bg-gray-200 text-gray-500"
-              : "bg-black/100 text-white"
-          } bg-gray-200 p-2 w-[45px] rounded-2xl flex justify-center items-center hover:scale-105 hover:cursor-pointer transition-transform duration-300`}
+              : "bg-red-600 text-white"
+          } flex w-[45px] items-center justify-center rounded-2xl bg-gray-200 p-2 transition-transform duration-300 hover:cursor-pointer hover:bg-gray-100`}
         >
           +
         </button>
       </section>
       {/* categories */}
-      <section className="flex gap-4 flex-wrap py-4">
+      <section className="flex flex-wrap gap-4 py-4">
         {/* new category button */}
 
         {!displayIsLiked ? (
           <button
-            onClick={showDisplayIsLiked}
-            className="bg-red-600 text-white flex items-center flex-nowrap  h-[30px] w-fit py-1 px-4 rounded-full font-semibold  hover:bg-red-500 hover:cursor-pointer transition-transform duration-300"
+            onClick={hideDisplayIsLiked}
+            className="flex h-[30px] w-fit scale-110 flex-nowrap items-center  rounded-full bg-red-600 px-4 py-1 font-semibold text-white  transition-transform duration-300 hover:cursor-pointer hover:bg-red-500"
           >
             All
           </button>
         ) : (
           <button
             onClick={hideDisplayIsLiked}
-            className="bg-gray-200 text-gray-500 flex items-center flex-nowrap  h-[30px] w-fit py-1 px-4 rounded-full font-semibold  hover:bg-gray-100 hover:cursor-pointer transition-transform duration-300"
+            className="flex h-[30px] w-fit flex-nowrap items-center  rounded-full bg-gray-200 px-4 py-1 font-semibold text-gray-500  transition-transform duration-300 hover:cursor-pointer hover:bg-gray-100"
           >
             All
           </button>
         )}
         {displayIsLiked ? (
           <button
-            onClick={hideDisplayIsLiked}
-            className="bg-red-600 text-white flex items-center flex-nowrap  h-[30px] w-fit py-1 px-4 rounded-full font-semibold  hover:bg-red-500 hover:cursor-pointer transition-transform duration-300"
+            onClick={showDisplayIsLiked}
+            className="flex h-[30px] w-fit scale-110 flex-nowrap items-center  rounded-full bg-red-600 px-4 py-1 font-semibold text-white  transition-transform duration-300 hover:cursor-pointer hover:bg-red-500"
           >
             Liked
           </button>
         ) : (
           <button
             onClick={showDisplayIsLiked}
-            className="bg-gray-200 text-gray-500 flex items-center flex-nowrap  h-[30px] w-fit py-1 px-4 rounded-full font-semibold  hover:bg-gray-100 hover:cursor-pointer transition-transform duration-300"
+            className="flex h-[30px] w-fit flex-nowrap items-center  rounded-full bg-gray-200 px-4 py-1 font-semibold text-gray-500  transition-transform duration-300 hover:cursor-pointer hover:bg-gray-100"
           >
             Liked
           </button>
         )}
       </section>
-
       {/* photo container */}
-      <section className="md:columns-3 lg:columns-4 gap-4 mb-8">
+      <section className="mb-8 gap-4 md:columns-3 lg:columns-4">
         {imageList}
       </section>
-
       {newImageForm ? (
         <NewImageForm
           newImageForm={newImageForm}
