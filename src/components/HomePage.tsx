@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import NewImageForm from "./NewImageForm";
-import FilterByCategoryButton from "./FilterByCategoryButton";
 import Photo from "./Photo";
-// import { UserContext } from "../App";
 
 export default function HomePage() {
   const [newImageForm, setNewImageForm] = useState(false);
@@ -33,7 +31,7 @@ export default function HomePage() {
         .then((data) => {
           setUserData((userData) => (userData = data));
         });
-    }
+    } else setUserData({ data: { name: "Guest" } });
   }, [accessToken, isRerender]);
 
   // fetch data
